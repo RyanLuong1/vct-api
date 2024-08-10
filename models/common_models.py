@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
 
-class Agent(Base):
+class Agents(Base):
     __tablename__ = "agents"
 
     agent_id = Column(Integer, primary_key=True)
@@ -40,8 +40,8 @@ class Stages(Base):
     __tablename__ = "stages"
 
     stage_id = Column(Integer, primary_key=True)
-    tournament = Column(Integer, ForeignKey("tournaments.tournament_id"))
-    stage = Column(String)
+    tournament_id = Column(Integer, ForeignKey("tournaments.tournament_id"))
+    stage_ = Column(String)
     year = Column(Integer)
 
     tournaments = relationship("Tournaments", back_populates="stages")
@@ -51,8 +51,8 @@ class MatchTypes(Base):
     __tablename__ = "match_types"
 
     match_type_id = Column(Integer, primary_key=True)
-    tournament = Column(Integer, ForeignKey("tournaments.tournament_id"))
-    stage = Column(Integer, ForeignKey("stages.stage_id"))
+    tournament_id = Column(Integer, ForeignKey("tournaments.tournament_id"))
+    stage_id = Column(Integer, ForeignKey("stages.stage_id"))
     match_type = Column(String)
     year = Column(Integer)
 

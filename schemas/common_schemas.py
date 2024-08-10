@@ -24,13 +24,13 @@ class TournamentBase(BaseModel):
 
 class StageBase(BaseModel):
     stage_id:int
-    tournament:int
+    tournament_id:int
     stage:str 
     year:int 
 
 class MatchTypeBase(BaseModel):
     match_type_id:int 
-    tournament:int 
-    stage:int 
+    tournament_id:int 
+    stage_id:int 
     match_type:str 
     year:int 
