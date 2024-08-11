@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.common_schemas import TournamentBase
 from models.common_models import Tournaments
 from utility.db import get_db
@@ -10,13 +11,14 @@ from typing import Optional
 router = APIRouter()
 
 @router.get("/tournaments/search", response_model=TournamentBase)
-async def get_player(name: Optional[str] = Query(None, min_length=1), db: Session = Depends(get_db)):
+async def get_player(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
     if name:
-        tournaments = jsonable_encoder(db.query(Tournaments).filter(Tournaments.tournament.like(f"{name}%")).all())
-        if not tournaments:
+        result = await db.execute(select(Tournaments).where(Tournaments.tournament.like(f"{name}%")))
+        if not result:
             raise HTTPException(status_code=404, detail=f"The search was not able to find a list of tournaments similar to the name: {name}")
     else:
-        tournaments = jsonable_encoder(db.query(Tournaments).all())
+        result = await db.execute(select(Tournaments))
+    tournaments = jsonable_encoder(result.scalars().all())
     response = {}
     for item in tournaments:
         year_dict = response.setdefault(item["year"], {})
@@ -25,10 +27,11 @@ async def get_player(name: Optional[str] = Query(None, min_length=1), db: Sessio
     return JSONResponse(content=response)
 
 @router.get("/tournaments/year/{year}", response_model=TournamentBase)
-async def get_tournament_based_on_year(year: str, db: Session = Depends(get_db)):
+async def get_tournament_based_on_year(year: str, db: AsyncSession = Depends(get_db)):
     if year.isdigit():
-        tournaments = jsonable_encoder(db.query(Tournaments).filter(Tournaments.year == int(year)).all())
+        result = await db.execute(select(Tournaments).where(Tournaments.year == int(year)))
         response = {}
+        tournaments = jsonable_encoder(result.scalars().all())
         for item in tournaments:
             tournament, id = item["tournament"], item["tournament_id"]
             response[tournament] = id
@@ -38,8 +41,9 @@ async def get_tournament_based_on_year(year: str, db: Session = Depends(get_db))
         raise HTTPException(status_code=404, detail=f"You did not provide a year!")
 
 @router.get("/tournaments", response_model=TournamentBase)
-async def get_all_tournaments(db: Session = Depends(get_db)):
-    tournaments = jsonable_encoder(db.query(Tournaments).all())
+async def get_all_tournaments(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Tournaments))
+    tournaments = jsonable_encoder(result.scalars().all())
     response = {}
     for item in tournaments:
         year_dict = response.setdefault(item["year"], {})

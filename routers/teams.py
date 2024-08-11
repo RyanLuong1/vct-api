@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.common_schemas import TeamBase
 from models.common_models import Teams
 from utility.db import get_db
@@ -10,30 +11,33 @@ from typing import Optional
 router = APIRouter()
 
 @router.get("/teams/search", response_model=TeamBase)
-async def get_player(name: Optional[str] = Query(None, min_length=1), db: Session = Depends(get_db)):
+async def get_player(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
     if name:
-        teams = jsonable_encoder(db.query(Teams).filter(Teams.team.like(f"{name}%")).all())
-        if not teams:
+        result = await db.execute(select(Teams).where(Teams.team.like(f"{name}%")))
+        if not result:
             raise HTTPException(status_code=404, detail=f"The search was not able to find a list of teams similar to the name: {name}")
     else:
-        teams = jsonable_encoder(db.query(Teams).all())
+        result = await db.execute(select(Teams))
+    teams = jsonable_encoder(result.scalars().all())
     response = {item["team"]: item["team_id"] for item in teams}
     return JSONResponse(content=response)
 
 @router.get("/teams/{identifier}", response_model=TeamBase)
-async def get_agent(identifier: str, db: Session = Depends(get_db)):
+async def get_agent(identifier: str, db: AsyncSession = Depends(get_db)):
     if identifier.isdigit():
-        team = db.query(Teams).filter(Teams.team_id == int(identifier)).first()
+        result = await db.execute(select(Teams).where(Teams.team_id == int(identifier)))
     else:
-        team = db.query(Teams).filter(Teams.team == identifier).first()
+        result = await db.execute(select(Teams).where(Teams.team == identifier))
     
-    if not team:
-        raise HTTPException(status_code=404, detail=f"The team was not found based on the id/name: {identifier}")
-    response = jsonable_encoder(team)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"The player was not found based on the id/name: {identifier}")
+    teams = jsonable_encoder(result.scalars().all())
+    response = {item["team"]: item["team_id"] for item in teams}
     return JSONResponse(content=response)
 
 @router.get("/teams", response_model=TeamBase)
-async def get_all_teams(db: Session = Depends(get_db)):
-    agents = jsonable_encoder(db.query(Teams).all())
-    response = {item["team"]: item["team_id"] for item in agents}
+async def get_all_teams(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Teams))
+    teams = jsonable_encoder(result.scalars().all())
+    response = {item["team"]: item["team_id"] for item in teams}
     return JSONResponse(content=response)
