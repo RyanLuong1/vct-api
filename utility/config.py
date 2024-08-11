@@ -24,4 +24,4 @@ def create_db_url():
     db = params["database"]
     user = params["user"]
     password = params["password"]
-    return f"postgresql://{user}:{password}@{host}:5432/{db}"
+    return f"postgresql+asyncpg://{user}:{password}@{host}:5432/{db}"
