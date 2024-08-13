@@ -41,7 +41,7 @@ class Stages(Base):
 
     stage_id = Column(Integer, primary_key=True)
     tournament_id = Column(Integer, ForeignKey("tournaments.tournament_id"))
-    stage_ = Column(String)
+    stage = Column(String)
     year = Column(Integer)
 
     tournaments = relationship("Tournaments", back_populates="stages")
