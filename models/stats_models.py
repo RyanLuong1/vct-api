@@ -32,6 +32,8 @@ class TeamsPickAgents(Base):
 
 
 class Overview(Base):
+    __tablename__ = "overview"
+
     index = Column(Integer, primary_key=True)
     tournament_id = Column(Integer, ForeignKey("tournaments.tournament_id"))
     stage_id = Column(Integer, ForeignKey("stages.stage_id"))
@@ -40,7 +42,6 @@ class Overview(Base):
     map_id = Column(Integer, ForeignKey("maps.map_id"))
     player_id = Column(Integer, ForeignKey("players.player_id"))
     team_id = Column(Integer, ForeignKey("teams.team_id"))
-    agent_id = Column(Integer, ForeignKey("agents.agent"))
     rating = Column(Float)
     acs = Column(Float)
     kills = Column(Float)
