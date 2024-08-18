@@ -28,17 +28,18 @@ async def get_all_agents_pick_rates_from_team(team_id: int, db: AsyncSession = D
     maps_result = await db.execute(select(Maps))
     all_maps = maps_result.all()
     maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
+    players_result = await db.execute(select(Players))
+    all_players = players_result.all()
+    players = {record[0].player_id: record[0].player for record in all_players if record[0].player}
     agents_result = await db.execute(select(Agents))
     agents = agents_result.all()
     agents = {record[0].agent_id: record[0].agent for record in agents if record[0].agent}
+    overview_agents = aliased(OverviewAgents)
     response = {}
 
     if include_players and include_maps:
-        players_result = await db.execute(select(Players))
-        all_players = players_result.all()
-        players = {record[0].player_id: record[0].player for record in all_players if record[0].player}
-        overview_agents = aliased(OverviewAgents)
         total_result = await db.execute(select(
+                Overview.player_id,
                 Overview.map_id,
                 Overview.year,
                 func.count().label("total_picks"),
@@ -49,13 +50,15 @@ async def get_all_agents_pick_rates_from_team(team_id: int, db: AsyncSession = D
             ).group_by(
                 Overview.year,
                 Overview.map_id,
+                Overview.player_id
             ))    
         all_total_picks = total_result.all()
         total_picks = {}
         for record in all_total_picks:
-            map, year, total_pick = maps[record[0]], record[1], record[2]
+            player, map, year, total_pick = players[record[0]], maps[record[1]], record[2], record[3]
             year_dict = total_picks.setdefault(year, {})
-            year_dict[map] = total_pick
+            map_dict = year_dict.setdefault(map, {})
+            map_dict[player] = total_pick
 
         maps_result = await db.execute(select(Maps))
         result = await db.execute(select(
@@ -84,7 +87,53 @@ async def get_all_agents_pick_rates_from_team(team_id: int, db: AsyncSession = D
             year_dict = response.setdefault(year, {})
             map_dict = year_dict.setdefault(map, {})
             player_dict = map_dict.setdefault(player, {})
-            total_pick = total_picks[year][map]
+            total_pick = total_picks[year][map][player]
+            percentage = round((total_agent_pick / total_pick) * 100, 2)
+            player_dict[agent] = jsonable_encoder(percentage)
+
+    elif include_players:
+        total_result = await db.execute(select(
+                Overview.player_id,
+                Overview.year,
+                func.count().label("total_picks"),
+            ).where(
+                Overview.side == "both",
+                Overview.team_id == team_id,
+                Overview.map_id != all_maps_id,
+            ).group_by(
+                Overview.year,
+                Overview.player_id
+            ))    
+        all_total_picks = total_result.all()
+        total_picks = {}
+        for record in all_total_picks:
+            player, year, total_pick = players[record[0]], record[1], record[2]
+            year_dict = total_picks.setdefault(year, {})
+            year_dict[player] = total_pick
+        result = await db.execute(select(
+                Overview.player_id,
+                overview_agents.agent_id,
+                Overview.year,
+                func.count().label("total_agent_picks"),
+            ).join(
+                overview_agents,
+                Overview.index == overview_agents.index
+            ).where(
+                Overview.side == "both",
+                Overview.team_id == team_id,
+                Overview.map_id != all_maps_id,
+                Overview.year.in_(years)
+            ).group_by(
+                Overview.year,
+                overview_agents.agent_id,
+                Overview.player_id
+            ))    
+        result = result.all()
+        for record in result:
+            player, agent, year, total_agent_pick = players[record.player_id], agents[record.agent_id], record.year, record.total_agent_picks
+            year_dict = response.setdefault(year, {})
+            player_dict = year_dict.setdefault(player, {})
+            total_pick = total_picks[year][player]
             percentage = round((total_agent_pick / total_pick) * 100, 2)
             player_dict[agent] = jsonable_encoder(percentage)
 
