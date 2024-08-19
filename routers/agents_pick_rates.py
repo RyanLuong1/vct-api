@@ -13,7 +13,7 @@ from utility.db import get_db
 router = APIRouter()
 
 @router.get("/pick-rates/agents/trends/team/{team_id}", response_model=AgentPickRateBase)
-async def get_all_agents_pick_rates_from_team(team_id: int, db: AsyncSession = Depends(get_db), include_maps:bool = Query(False), include_players: bool = Query(False)):
+async def get_all_agents_pick_rates_trends_from_team(team_id: int, db: AsyncSession = Depends(get_db), include_maps:bool = Query(False), include_players: bool = Query(False)):
     team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
     team = team_result.scalars().first()
 
@@ -386,7 +386,7 @@ async def get_all_agents_pick_rates_from_team(team_id: int, db: AsyncSession = D
     return JSONResponse(content = response)
 
 @router.get("/pick-rates/agents/trends", response_model=AgentPickRateBase)
-async def get_all_agents_pick_rates_overtime(db: AsyncSession = Depends(get_db), include_maps:bool = Query(False)):
+async def get_all_agents_pick_rates_trends(db: AsyncSession = Depends(get_db), include_maps:bool = Query(False)):
 
     stages_result = await db.execute(select(Stages.stage_id).where(Stages.stage == "All Stages"))
     all_stages_ids = stages_result.scalars().all()

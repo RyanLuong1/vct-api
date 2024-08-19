@@ -10,7 +10,7 @@ from typing import Optional
 router = APIRouter()
 
 @router.get("/players/search", response_model=PlayerBase)
-async def get_player(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
+async def search_players(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
     if name:
         result = await db.execute(select(Players).where(Players.player.like(f"{name}%")))
         if not result:

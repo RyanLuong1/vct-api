@@ -10,14 +10,14 @@ from utility.db import get_db
 router = APIRouter()
 
 @router.get("/maps", response_model=MapBase)
-async def get_all_agents(db: Session = Depends(get_db)):
+async def get_all_maps(db: Session = Depends(get_db)):
     result = await db.execute(select(Maps))
     maps = jsonable_encoder(result.scalars().all())
     response = {item["map"]: item["map_id"] for item in maps if item["map"]}
     return JSONResponse(content=response)
 
 @router.get("/maps/{identifier}", response_model=MapBase)
-async def get_agent(identifier: str, db: Session = Depends(get_db)):
+async def get_map(identifier: str, db: Session = Depends(get_db)):
     if identifier.isdigit():
         result = await db.execute(select(Maps).where(Maps.map_id == int(identifier)))
     else:

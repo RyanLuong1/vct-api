@@ -11,7 +11,7 @@ from typing import Optional
 router = APIRouter()
 
 @router.get("/teams/search", response_model=TeamBase)
-async def get_player(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
+async def search_teams(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
     if name:
         result = await db.execute(select(Teams).where(Teams.team.like(f"{name}%")))
         if not result:
@@ -23,7 +23,7 @@ async def get_player(name: Optional[str] = Query(None, min_length=1), db: AsyncS
     return JSONResponse(content=response)
 
 @router.get("/teams/{identifier}", response_model=TeamBase)
-async def get_agent(identifier: str, db: AsyncSession = Depends(get_db)):
+async def get_team(identifier: str, db: AsyncSession = Depends(get_db)):
     if identifier.isdigit():
         result = await db.execute(select(Teams).where(Teams.team_id == int(identifier)))
     else:

@@ -11,7 +11,7 @@ from typing import Optional
 router = APIRouter()
 
 @router.get("/tournaments/search", response_model=TournamentBase)
-async def get_player(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
+async def search_tournaments(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
     if name:
         result = await db.execute(select(Tournaments).where(Tournaments.tournament.like(f"{name}%")))
         if not result:
