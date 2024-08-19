@@ -10,7 +10,7 @@ from typing import Optional
 
 router = APIRouter()
 
-@router.get("/teams/search", response_model=TeamBase)
+@router.get("/teams/search")
 async def search_teams(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
     if name:
         result = await db.execute(select(Teams).where(Teams.team.like(f"{name}%")))
@@ -22,7 +22,7 @@ async def search_teams(name: Optional[str] = Query(None, min_length=1), db: Asyn
     response = {item["team"]: item["team_id"] for item in teams}
     return JSONResponse(content=response)
 
-@router.get("/teams/{identifier}", response_model=TeamBase)
+@router.get("/teams/{identifier}")
 async def get_team(identifier: str, db: AsyncSession = Depends(get_db)):
     if identifier.isdigit():
         result = await db.execute(select(Teams).where(Teams.team_id == int(identifier)))
@@ -35,7 +35,7 @@ async def get_team(identifier: str, db: AsyncSession = Depends(get_db)):
     response = {item["team"]: item["team_id"] for item in teams}
     return JSONResponse(content=response)
 
-@router.get("/teams", response_model=TeamBase)
+@router.get("/teams")
 async def get_all_teams(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Teams))
     teams = jsonable_encoder(result.scalars().all())

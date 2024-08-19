@@ -9,7 +9,7 @@ from utility.db import get_db
 from typing import Optional
 router = APIRouter()
 
-@router.get("/players/search", response_model=PlayerBase)
+@router.get("/players/search")
 async def search_players(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
     if name:
         result = await db.execute(select(Players).where(Players.player.like(f"{name}%")))
@@ -22,7 +22,7 @@ async def search_players(name: Optional[str] = Query(None, min_length=1), db: As
     return JSONResponse(content=response)
 
 
-@router.get("/players/{identifier}", response_model=PlayerBase)
+@router.get("/players/{identifier}")
 async def get_player(identifier: str, db: AsyncSession = Depends(get_db)):
     if identifier.isdigit():
         result = await db.execute(select(Players).where(Players.player_id == int(identifier)))
@@ -35,7 +35,7 @@ async def get_player(identifier: str, db: AsyncSession = Depends(get_db)):
     response = {item["player"]: item["player_id"] for item in players}
     return JSONResponse(content=response)
 
-@router.get("/players", response_model=PlayerBase)
+@router.get("/players")
 async def get_all_players(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Players))
     players = jsonable_encoder(result.scalars().all())

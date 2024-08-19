@@ -9,7 +9,7 @@ from utility.db import get_db
 
 router = APIRouter()
 
-@router.get("/agents", response_model=AgentBase)
+@router.get("/agents")
 async def get_all_agents(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Agents))
     agents = jsonable_encoder(result.scalars().all())
@@ -17,7 +17,7 @@ async def get_all_agents(db: AsyncSession = Depends(get_db)):
     response = {item["agent"]: item["agent_id"] for item in agents if item["agent"]}
     return JSONResponse(content=response)
 
-@router.get("/agents/{identifier}", response_model=AgentBase)
+@router.get("/agents/{identifier}")
 async def get_agent(identifier: str, db: AsyncSession = Depends(get_db)):
     if identifier.isdigit():
         result = await db.execute(select(Agents).where(Agents.agent_id == int(identifier)))

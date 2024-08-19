@@ -10,7 +10,7 @@ from typing import Optional
 
 router = APIRouter()
 
-@router.get("/tournaments/search", response_model=TournamentBase)
+@router.get("/tournaments/search")
 async def search_tournaments(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
     if name:
         result = await db.execute(select(Tournaments).where(Tournaments.tournament.like(f"{name}%")))
@@ -26,7 +26,7 @@ async def search_tournaments(name: Optional[str] = Query(None, min_length=1), db
         year_dict[tournament] = id
     return JSONResponse(content=response)
 
-@router.get("/tournaments/year/{year}", response_model=TournamentBase)
+@router.get("/tournaments/year/{year}")
 async def get_tournament_based_on_year(year: str, db: AsyncSession = Depends(get_db)):
     if year.isdigit():
         result = await db.execute(select(Tournaments).where(Tournaments.year == int(year)))
@@ -40,7 +40,7 @@ async def get_tournament_based_on_year(year: str, db: AsyncSession = Depends(get
     else:
         raise HTTPException(status_code=404, detail=f"You did not provide a year!")
 
-@router.get("/tournaments", response_model=TournamentBase)
+@router.get("/tournaments")
 async def get_all_tournaments(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Tournaments))
     tournaments = jsonable_encoder(result.scalars().all())
