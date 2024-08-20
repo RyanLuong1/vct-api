@@ -2,7 +2,7 @@
 def get_tournament_pool():
     tournament_pool = {
         2021: {
-            "Stage 1": set([
+            "Stage 1": [
                 "Oceania Tour: Stage 01",
                 "Champions Tour Brazil Stage 1: Challengers 1",
                 "Champions Tour Brazil Stage 1: Challengers 2",
@@ -52,8 +52,8 @@ def get_tournament_pool():
                 "Champions Tour Turkey Stage 1: Challengers 2",
                 "Champions Tour Turkey Stage 1: Challengers 3",
                 "Champions Tour Turkey Stage 1: Masters"
-            ]),
-            "Stage 2": set([
+            ],
+            "Stage 2": [
                 "Oceania Tour: Stage 02",
                 "Strike Arabia Championship: Season 1",
                 "Strike Arabia League: Season 1",
@@ -95,8 +95,8 @@ def get_tournament_pool():
                 "Champions Tour Turkey Stage 2: Challengers 2",
                 "Champions Tour Vietnam Stage 2: Challengers",
                 "Valorant Champions Tour Stage 2: Masters Reykjavík"
-            ]),
-            "Stage 3": set([
+            ],
+            "Stage 3": [
                 "Strike Arabia Championship: Season 2",
                 "Strike Arabia League: Season 3",
                 "Oceania Tour: Championship",
@@ -144,19 +144,19 @@ def get_tournament_pool():
                 "Champions Tour Vietnam Stage 3: Challengers 2",
                 "Champions Tour Vietnam Stage 3: Challengers 3",
                 "Valorant Champions Tour Stage 3: Masters Berlin"
-            ]),
-            "Last Chance Qualifier": set([
+            ],
+            "Last Chance Qualifier": [
                 "Champions Tour Asia-Pacific: Last Chance Qualifier",
                 "Champions Tour EMEA: Last Chance Qualifier",
                 "Champions Tour North America: Last Chance Qualifier",
                 "Champions Tour South America: Last Chance Qualifier"
-            ]),
-            "Champions": set([
+            ],
+            "Champions": [
                 "Valorant Champions 2021"
-            ])
+            ]
   },
         2022: {
-            "Stage 1": set([
+            "Stage 1": [
                 "Valorant Conquerors Championship",
                 "Road to VCT 2022",
                 "Champions Tour Asia-Pacific Stage 1: Challengers Playoffs",
@@ -186,8 +186,8 @@ def get_tournament_pool():
                 "Champions Tour Vietnam Stage 1: Challengers",
                 "Oceania Tour: Stage 1",
                 "Valorant Champions Tour Stage 1: Masters Reykjavík"
-            ]),
-            "Stage 2": set([
+            ],
+            "Stage 2": [
                 "Skyesports Champions Series",
                 "Champions Tour Asia-Pacific Stage 2: Challengers Playoffs",
                 "Champions Tour Brazil Stage 2: Challengers",
@@ -210,61 +210,61 @@ def get_tournament_pool():
                 "Oceania Tour: Stage 2",
                 "Road to VCT 2022: Stage 2",
                 "Valorant Champions Tour Stage 2: Masters Copenhagen"
-            ]),
-            "Last Chance Qualifier": set([
+            ],
+            "Last Chance Qualifier": [
                 "Oceania Tour: Championship",
                 "Champions Tour Asia-Pacific: Last Chance Qualifier",
                 "Champions Tour EMEA: Last Chance Qualifier",
                 "Champions Tour East Asia: Last Chance Qualifier",
                 "Champions Tour North America: Last Chance Qualifier",
                 "Champions Tour South America: Last Chance Qualifier"
-            ]),
-            "Champions": set([
+            ],
+            "Champions": [
                 "Valorant Champions 2022"
-            ])
+            ]
   },
         2023: {
-            "Stage 1": set([
+            "Stage 1": [
                 "Champions Tour 2023: Lock-In Sao Paulo",
                 "Champions Tour 2023: Pacific League",
                 "Champions Tour 2023: EMEA League",
                 "Champions Tour 2023: Americas League",
                 "Champions Tour 2023: Masters Tokyo"
-            ]),
-            "Last Chance Qualifier": set([
+            ],
+            "Last Chance Qualifier": [
                 "Champions Tour 2023: Champions China Qualifier",
                 "Champions Tour 2023: Pacific Last Chance Qualifier",
                 "Champions Tour 2023: EMEA Last Chance Qualifier",
                 "Champions Tour 2023: Americas Last Chance Qualifier"
-            ]),
-            "Champions": set([
+            ],
+            "Champions": [
                 "Valorant Champions 2023"
-            ])
+            ]
     },
         2024: {
-            "Kickoff": set([
+            "Kickoff": [
                 "Champions Tour 2024: Pacific Kickoff",
                 "Champions Tour 2024: EMEA Kickoff",
                 "Champions Tour 2024: China Kickoff",
                 "Champions Tour 2024: Americas Kickoff",
                 "Champions Tour 2024: Masters Madrid"
-            ]),
-            "Stage 1": set([
+            ],
+            "Stage 1": [
                 "Champions Tour 2024: Pacific Stage 1",
                 "Champions Tour 2024: EMEA Stage 1",
                 "Champions Tour 2024: China Stage 1",
                 "Champions Tour 2024: Americas Stage 1",
                 "Champions Tour 2024: Masters Shanghai"
-            ]),
-            "Stage 2": set([
+            ],
+            "Stage 2": [
                 "Champions Tour 2024: Pacific Stage 2",
                 "Champions Tour 2024: EMEA Stage 2",
                 "Champions Tour 2024: China Stage 2",
                 "Champions Tour 2024: Americas Stage 2"
-            ]),
-            "Champions": set([
+            ],
+            "Champions": [
                 "Valorant Champions 2024"
-                ])
+                ]
         }
 } 
     return tournament_pool
@@ -272,70 +272,70 @@ def get_tournament_pool():
 def get_agent_pool():
     agent_pool = {
         2021: {
-            "Stage 1": set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+            "Stage 1": ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                            "viper", "omen", "astra", "sova", "breach", "skye",
-                           "sage", "cypher", "killjoy", "kayo"]),
-            "Stage 2": set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                           "sage", "cypher", "killjoy", "kayo"],
+            "Stage 2": ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                            "viper", "omen", "astra", "sova", "breach", "skye",
-                           "sage", "cypher", "killjoy"]),
-            "Stage 3": set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                           "sage", "cypher", "killjoy"],
+            "Stage 3": ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                            "viper", "omen", "astra", "sova", "breach", "skye",
-                           "sage", "cypher", "killjoy", "kayo"]),
-            "Last Chance Qualifier": set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                           "sage", "cypher", "killjoy", "kayo"],
+            "Last Chance Qualifier": ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                                          "viper", "omen", "astra", "sova", "breach", "skye",
-                                         "sage", "cypher", "killjoy", "kayo"]),
-            "Champions": set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                                         "sage", "cypher", "killjoy", "kayo"],
+            "Champions": ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                              "viper", "omen", "astra", "sova", "breach", "skye",
-                             "sage", "cypher", "killjoy", "kayo"])
+                             "sage", "cypher", "killjoy", "kayo"]
         },
         2022: {
-            "Stage 1" : set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+            "Stage 1" : ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                             "viper", "omen", "astra", "sova", "breach", "skye",
-                            "sage", "cypher", "killjoy", "kayo", "neon", "chamber"]),
-            "Stage 2" : set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                            "sage", "cypher", "killjoy", "kayo", "neon", "chamber"],
+            "Stage 2" : ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                             "viper", "omen", "astra", "sova", "breach", "skye",
                             "sage", "cypher", "killjoy", "kayo", "neon", "chamber",
-                            "fade"]),
-            "Last Chance Qualifier" : set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                            "fade"],
+            "Last Chance Qualifier" : ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                                           "viper", "omen", "astra", "sova", "breach", "skye",
                                           "sage", "cypher", "killjoy", "kayo", "neon", "chamber",
-                                          "fade"]),
-            "Champions" : set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                                          "fade"],
+            "Champions" : ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                               "viper", "omen", "astra", "sova", "breach", "skye",
                               "sage", "cypher", "killjoy", "kayo", "neon", "chamber",
-                              "fade"])  
+                              "fade"]  
         },
         2023: {
-            "Stage 1" : set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+            "Stage 1" : ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                             "viper", "omen", "astra", "sova", "breach", "skye",
                             "sage", "cypher", "killjoy", "kayo", "neon", "chamber",
-                            "fade", "harbor", "gekko"]),
-            "Last Chance Qualifier" : set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                            "fade", "harbor", "gekko"],
+            "Last Chance Qualifier" : ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                                           "viper", "omen", "astra", "sova", "breach", "skye",
                                           "sage", "cypher", "killjoy", "kayo", "neon", "chamber",
-                                          "fade", "harbor", "gekko"]),
-            "Champions" : set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                                          "fade", "harbor", "gekko"],
+            "Champions" : ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                               "viper", "omen", "astra", "sova", "breach", "skye",
                               "sage", "cypher", "killjoy", "kayo", "neon", "chamber",
-                              "fade", "harbor", "gekko"])
+                              "fade", "harbor", "gekko"]
         },
         2024: {
-            "Kickoff": set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+            "Kickoff": ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                            "viper", "omen", "astra", "sova", "breach", "skye",
                            "sage", "cypher", "killjoy", "kayo", "neon", "chamber",
-                           "fade", "harbor", "gekko", "iso"]),
-            "Stage 1": set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                           "fade", "harbor", "gekko", "iso"],
+            "Stage 1": ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                            "viper", "omen", "astra", "sova", "breach", "skye",
                            "sage", "cypher", "killjoy", "kayo", "neon", "chamber",
-                           "fade", "harbor", "gekko", "iso", "clove"]),
-            "Stage 2": set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                           "fade", "harbor", "gekko", "iso", "clove"],
+            "Stage 2": ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                            "viper", "omen", "astra", "sova", "breach", "skye",
                            "sage", "cypher", "killjoy", "kayo", "neon", "chamber",
-                           "fade", "harbor", "gekko", "iso", "clove"]),
-            "Champions": set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
+                           "fade", "harbor", "gekko", "iso", "clove"],
+            "Champions": ["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
                              "viper", "omen", "astra", "sova", "breach", "skye",
                              "sage", "cypher", "killjoy", "kayo", "neon", "chamber",
-                             "fade", "harbor", "gekko", "iso", "clove"])
+                             "fade", "harbor", "gekko", "iso", "clove"]
         }
     }
     return agent_pool
@@ -343,29 +343,28 @@ def get_agent_pool():
 def get_map_pool():
     map_pool = {
         2021: {
-                    'Stage 1': set(['Icebox', 'Ascent', 'Haven', 'Bind', 'Split']),
-                    'Stage 2': set(['Icebox', 'Ascent', 'Haven', 'Bind', 'Split']),
-                    'Stage 3': set(['Icebox', 'Ascent', 'Haven', 'Breeze', 'Bind', 'Split']),
-                    'Last Chance Qualifier': set(['Icebox', 'Ascent', 'Haven', 'Breeze', 'Bind', 'Split']),
-                    'Champions': set(['Icebox', 'Fracture', 'Ascent', 'Breeze', 'Haven', 'Bind', 'Split'])
+                    'Stage 1': ['Icebox', 'Ascent', 'Haven', 'Bind', 'Split'],
+                    'Stage 2': ['Icebox', 'Ascent', 'Haven', 'Bind', 'Split'],
+                    'Stage 3': ['Icebox', 'Ascent', 'Haven', 'Breeze', 'Bind', 'Split'],
+                    'Last Chance Qualifier': ['Icebox', 'Ascent', 'Haven', 'Breeze', 'Bind', 'Split'],
+                    'Champions': ['Icebox', 'Fracture', 'Ascent', 'Breeze', 'Haven', 'Bind', 'Split']
         },
         2022: {
-                    'Stage 1': set(['Icebox', 'Fracture', 'Ascent', 'Breeze', 'Haven', 'Bind', 'Split']),
-                    'Stage 2': set(['Icebox', 'Fracture', 'Ascent', 'Breeze', 'Haven', 'Bind', 'Split']),
-                    'Last Chance Qualifier': set(['Icebox', 'Fracture', 'Ascent', 'Breeze', 'Haven', 'Bind', 'Split']),
-                    'Champions': set(['Icebox', 'Fracture', 'Ascent', 'Breeze', 'Haven', 'Bind', 'Pearl'])
+                    'Stage 1': ['Icebox', 'Fracture', 'Ascent', 'Breeze', 'Haven', 'Bind', 'Split'],
+                    'Stage 2': ['Icebox', 'Fracture', 'Ascent', 'Breeze', 'Haven', 'Bind', 'Split'],
+                    'Last Chance Qualifier': ['Icebox', 'Fracture', 'Ascent', 'Breeze', 'Haven', 'Bind', 'Split'],
+                    'Champions': ['Icebox', 'Fracture', 'Ascent', 'Breeze', 'Haven', 'Bind', 'Pearl']
         },
         2023: {
-                    'Stage 1': set(['Lotus', 'Icebox', 'Fracture', 'Ascent', 'Haven', 'Bind', 'Split', 'Pearl']),
-                    'Last Chance Qualifier': set(['Lotus', 'Fracture', 'Ascent', 'Haven', 'Bind', 'Split', 'Pearl']),
-                    'Champions': set(['Lotus', 'Fracture', 'Ascent', 'Haven', 'Bind', 'Split', 'Pearl'])
+                    'Stage 1': ['Lotus', 'Icebox', 'Fracture', 'Ascent', 'Haven', 'Bind', 'Split', 'Pearl'],
+                    'Last Chance Qualifier': ['Lotus', 'Fracture', 'Ascent', 'Haven', 'Bind', 'Split', 'Pearl'],
+                    'Champions': ['Lotus', 'Fracture', 'Ascent', 'Haven', 'Bind', 'Split', 'Pearl']
         },
         2024: {
-                    'Kickoff': set(['Lotus', 'Icebox', 'Ascent', 'Breeze', 'Split', 'Bind', 'Sunset']),
-                    'Stage 1': set(['Lotus', 'Icebox', 'Sunset', 'Ascent', 'Breeze', 'Bind', 'Split']),
-                    'Stage 2': set(['Abyss', 'Lotus', 'Icebox', 'Ascent', 'Haven', 'Breeze', 'Split', 'Bind', 'Sunset']),
-                    "Champions": set(["Lotus", "Bind", "Sunset", "Icebox", "Abyss", "Haven", "Ascent"])
+                    'Kickoff': ['Lotus', 'Icebox', 'Ascent', 'Breeze', 'Split', 'Bind', 'Sunset'],
+                    'Stage 1': ['Lotus', 'Icebox', 'Sunset', 'Ascent', 'Breeze', 'Bind', 'Split'],
+                    'Stage 2': ['Abyss', 'Lotus', 'Icebox', 'Ascent', 'Haven', 'Breeze', 'Split', 'Bind', 'Sunset'],
+                    "Champions": ["Lotus", "Bind", "Sunset", "Icebox", "Abyss", "Haven", "Ascent"]
         }
     }
     return map_pool
-
