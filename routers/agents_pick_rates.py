@@ -4,7 +4,6 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func, select, distinct
 from sqlalchemy.orm import aliased
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.stats_schemas import AgentPickRateBase
 from models.stats_models import AgentsPickRates, TeamsPickAgents, Overview
 from models.junction_models import OverviewAgents
 from models.common_models import Agents, Maps, Stages, Teams, Players
