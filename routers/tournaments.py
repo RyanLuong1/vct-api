@@ -6,9 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.common_schemas import TournamentBase
 from models.common_models import Tournaments
 from utility.db import get_db
+from utility.pools import tournament_pool
 from typing import Optional
 
 router = APIRouter()
+
+@router.get("/tournaments/pool")
+async def get_tournament_pool():
+    response = tournament_pool()
+    return JSONResponse(content = response)
 
 @router.get("/tournaments/search")
 async def search_tournaments(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):

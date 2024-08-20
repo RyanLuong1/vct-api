@@ -6,15 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.common_schemas import AgentBase
 from models.common_models import Agents
 from utility.db import get_db
+from utility.pools import agent_pool
 
 router = APIRouter()
 
-@router.get("/agents")
-async def get_all_agents(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Agents))
-    agents = jsonable_encoder(result.scalars().all())
-
-    response = {item["agent"]: item["agent_id"] for item in agents if item["agent"]}
+@router.get("/agents/pool")
+async def get_agent_pool():
+    
+    response = agent_pool()
     return JSONResponse(content=response)
 
 @router.get("/agents/{identifier}")
@@ -28,4 +27,12 @@ async def get_agent(identifier: str, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail=f"The agent was not found based on the id/name: {identifier}")
     agent = jsonable_encoder(result.scalars().first())
     response = {agent["agent"]: agent["agent_id"]}
+    return JSONResponse(content=response)
+
+@router.get("/agents")
+async def get_all_agents(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Agents))
+    agents = jsonable_encoder(result.scalars().all())
+
+    response = {item["agent"]: item["agent_id"] for item in agents if item["agent"]}
     return JSONResponse(content=response)
