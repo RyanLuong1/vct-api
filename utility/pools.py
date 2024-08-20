@@ -1,5 +1,5 @@
 
-def tournament_pool():
+def get_tournament_pool():
     tournament_pool = {
         2021: {
             "Stage 1": set([
@@ -269,7 +269,7 @@ def tournament_pool():
 } 
     return tournament_pool
 
-def agent_pool():
+def get_agent_pool():
     agent_pool = {
         2021: {
             "Stage 1": set(["jett", "phoenix", "reyna", "raze", "yoru", "brimstone",
@@ -340,7 +340,7 @@ def agent_pool():
     }
     return agent_pool
 
-def map_pool():
+def get_map_pool():
     map_pool = {
         2021: {
                     'Stage 1': set(['Icebox', 'Ascent', 'Haven', 'Bind', 'Split']),
@@ -368,3 +368,4 @@ def map_pool():
         }
     }
     return map_pool
+
