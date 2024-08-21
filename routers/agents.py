@@ -3,7 +3,6 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.common_schemas import AgentBase
 from models.common_models import Agents
 from utility.db import get_db
 from utility.pools import agent_pool
