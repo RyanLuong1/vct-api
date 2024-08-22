@@ -89,3 +89,16 @@ class MapsScores(Base):
     team_b_overtime_score = Column(Integer)
     duration = Column(Interval)
     year = Column(Integer)
+
+
+class DraftPhase(Base):
+    __tablename__ = "draft_phase"
+
+    index = Column(Integer, primary_key=True)
+    tournament_id = Column(Integer, ForeignKey("tournaments.tournament_id"))
+    stage_id = Column(Integer, ForeignKey("stages.stage_id"))
+    match_type_id = Column(Integer, ForeignKey("match_types.match_type_id"))
+    match_id = Column(Integer, ForeignKey("matches.match_id"))
+    map_id = Column(Integer, ForeignKey("maps.map_id"))
+    team_id = Column(Integer, ForeignKey("teams.team_id"))
+    action = Column(String)
