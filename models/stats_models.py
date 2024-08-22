@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Interval
 from database import Base
 
 class AgentsPickRates(Base):
@@ -55,4 +54,38 @@ class Overview(Base):
     fd = Column(Float)
     fkd = Column(Float)
     side = Column(String)
+    year = Column(Integer)
+
+class MapsStats(Base):
+    __tablename__ = "maps_stats"
+
+    index = Column(Integer, primary_key=True)
+    tournament_id = Column(Integer, ForeignKey("tournaments.tournament_id"))
+    stage_id = Column(Integer, ForeignKey("stages.stage_id"))
+    match_type_id = Column(Integer, ForeignKey("match_types.match_type_id"))
+    map_id = Column(Integer, ForeignKey("maps.map_id"))
+    total_maps_played = Column(Integer)
+    attacker_side_win_percentage = Column(Float)
+    defender_side_win_percentage = Column(Float)
+    year = Column(Integer)
+
+class MapsScores(Base):
+    __tablename__ = "maps_scores"
+    index = Column(Integer, primary_key=True)
+    tournament_id = Column(Integer, ForeignKey("tournaments.tournament_id"))
+    stage_id = Column(Integer, ForeignKey("stages.stage_id"))
+    match_type_id = Column(Integer, ForeignKey("match_types.match_type_id"))
+    match_id = Column(Integer, ForeignKey("matches.match_id"))
+    map_id = Column(Integer, ForeignKey("maps.map_id"))
+    team_a_id = Column(Integer, ForeignKey("teams.team_id"))
+    team_b_id = Column(Integer, ForeignKey("teams.team_id"))
+    team_a_score = Column(Integer)
+    team_a_attacker_score = Column(Integer)
+    team_a_defender_score = Column(Integer)
+    team_a_overtime_score = Column(Integer)
+    team_b_score = Column(Integer)
+    team_b_attacker_score = Column(Integer)
+    team_b_defender_score = Column(Integer)
+    team_b_overtime_score = Column(Integer)
+    duration = Column(Interval)
     year = Column(Integer)
