@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select, distinct, func, case, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.common_models import Maps, Stages, Teams
-from models.stats_models import MapsStats, MapsScores
+from models.stats_models import MapsStats, MapsScores, DraftPhase
 from utility.db import get_db
 
 router = APIRouter()
@@ -192,6 +192,67 @@ async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
         map_dict = response.setdefault(map, {})
         map_dict["attk"] = round(attk_wr * 100, 2)
         map_dict["def"] = round(def_wr * 100, 2)
+    return JSONResponse(content=response)
+
+@router.get("/maps-stats/picks-bans")
+async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
+    maps_result = await db.execute(select(Maps))
+    all_maps = maps_result.all()
+    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
+    response = {}
+
+    bans_result = await db.execute(select(
+        DraftPhase.map_id,
+        func.count().label("total_bans_per_map") 
+    ).where(
+        DraftPhase.map_id != 0,
+        DraftPhase.action == "ban"
+    ).group_by(
+        DraftPhase.map_id
+    )
+    )
+
+    picks_result = await db.execute(select(
+        DraftPhase.map_id,
+        func.count().label("total_picks_per_map") 
+    ).where(
+        DraftPhase.map_id != 0,
+        DraftPhase.action == "pick"
+    ).group_by(
+        DraftPhase.map_id
+    )
+    )
+
+    total_picks_result = await db.execute(select(
+        func.count().label("total_picks")
+    ).where(
+        DraftPhase.map_id != 0,
+        DraftPhase.action == "pick"
+    ))
+
+    total_bans_result = await db.execute(select(
+        func.count().label("total_bans")
+    ).where(
+        DraftPhase.map_id != 0,
+        DraftPhase.action == "ban"
+    ))
+
+    bans = {record.map_id: record.total_bans_per_map for record in bans_result.all()}
+    picks = {record.map_id: record.total_picks_per_map for record in picks_result.all()}
+
+    total_bans = total_bans_result.scalars().first()
+    total_picks = total_picks_result.scalars().first()
+    response["total_global_bans"] = total_bans
+    response["total_global_picks"] = total_picks
+    for id, map in maps.items():
+        if map != "All Maps":
+            bans_amt, picks_amt = bans[id], picks[id]
+            response[map] = {"pick_rate_map_specific": round((bans_amt / (bans_amt + picks_amt)) * 100, 2),
+                            "ban_rate_map_specific": round((picks_amt / (bans_amt + picks_amt)) * 100, 2),
+                            "pick_rate_global": round((picks_amt / total_bans) * 100, 2),
+                            "ban_rate_global": round((bans_amt / total_picks) * 100, 2),
+                            "total_picks": picks_amt,
+                            "total_bans": bans_amt}
     return JSONResponse(content=response)
 
 # @router.get("/maps/{identifier}")

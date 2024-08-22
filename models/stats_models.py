@@ -102,3 +102,4 @@ class DraftPhase(Base):
     map_id = Column(Integer, ForeignKey("maps.map_id"))
     team_id = Column(Integer, ForeignKey("teams.team_id"))
     action = Column(String)
+    year = Column(Integer)
