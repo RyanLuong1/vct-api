@@ -208,15 +208,17 @@ async def get_maps_win_loss_percentage(team_id: int, db: AsyncSession = Depends(
         MapsScores.map_id
     ))
 
+
     total_maps_records = total_maps_result.all()
     total_wins_records = total_wins_result.all()
 
     total_maps_played = {record.map_id: record.total_maps_played for record in total_maps_records}
-    total_wins = {}
 
     for record in total_wins_records:
         map, total_wins, total_maps = maps[record.map_id], record.total_wins, total_maps_played[record.map_id]
-        response[map] = round((total_wins / total_maps) * 100, 2)
+        response[map] = {"wr": round((total_wins / total_maps) * 100, 2),
+                         "total_wins": total_wins,
+                         "total_maps_played": total_maps}
 
     return JSONResponse(content=response)
 
@@ -382,8 +384,9 @@ async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(
         MapsStats.map_id,
         MapsStats.year,
+        func.sum(MapsStats.total_maps_played).label("total_maps_played"),
         func.avg(MapsStats.attacker_side_win_percentage).label("overall_attk_wr"),
-        func.avg(MapsStats.defender_side_win_percentage).label("overall_def_wr")
+        func.avg(MapsStats.defender_side_win_percentage).label("overall_def_wr"),
     ).where(
         MapsStats.map_id != all_maps_id,
         MapsStats.map_id != 0,
@@ -395,11 +398,12 @@ async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
     )
 
     for record in result:
-        map, year, attk_wr, def_wr = maps[record.map_id], record.year, jsonable_encoder(record.overall_attk_wr), jsonable_encoder(record.overall_def_wr)
+        map, year, attk_wr, def_wr, total_maps_played = maps[record.map_id], record.year, jsonable_encoder(record.overall_attk_wr), jsonable_encoder(record.overall_def_wr), record.total_maps_played
         year_dict = response.setdefault(year, {})
         map_dict = year_dict.setdefault(map, {})
         map_dict["attk"] = round(attk_wr * 100, 2)
         map_dict["def"] = round(def_wr * 100, 2)
+        map_dict["total_maps_played"] = total_maps_played
     return JSONResponse(content=response)
 
 @router.get("/maps-stats/wr")
@@ -414,6 +418,7 @@ async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
     response = {}
     result = await db.execute(select(
         MapsStats.map_id,
+        func.sum(MapsStats.total_maps_played).label("total_maps_played"),
         func.avg(MapsStats.attacker_side_win_percentage).label("overall_attk_wr"),
         func.avg(MapsStats.defender_side_win_percentage).label("overall_def_wr")
     ).where(
@@ -425,11 +430,13 @@ async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
     )
     )
 
+
     for record in result:
-        map, attk_wr, def_wr = maps[record.map_id], jsonable_encoder(record.overall_attk_wr), jsonable_encoder(record.overall_def_wr)
+        map, attk_wr, def_wr, total_maps_played = maps[record.map_id], jsonable_encoder(record.overall_attk_wr), jsonable_encoder(record.overall_def_wr), record.total_maps_played
         map_dict = response.setdefault(map, {})
         map_dict["attk"] = round(attk_wr * 100, 2)
         map_dict["def"] = round(def_wr * 100, 2)
+        map_dict["total_maps_played"] = total_maps_played
     return JSONResponse(content=response)
 
 @router.get("/maps-stats/picks-bans")
