@@ -10,7 +10,7 @@ from utility.db import get_db
 router = APIRouter()
 
 @router.get("/maps-stats/trends/wr/team/{team_id}")
-async def get_team_maps_win_loss_percentage_per_year(team_id: int, db: AsyncSession = Depends(get_db)):
+async def get_team_maps_win_loss_percentage_trends(team_id: int, db: AsyncSession = Depends(get_db)):
     team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
     team = team_result.scalars().first()
 
@@ -135,7 +135,7 @@ async def get_team_maps_win_loss_percentage(team_id: int, db: AsyncSession = Dep
 
 
 @router.get("/maps-stats/trends/wr")
-async def get_maps_win_loss_percentage_per_year(db: AsyncSession = Depends(get_db)):
+async def get_maps_win_loss_percentage_trends(db: AsyncSession = Depends(get_db)):
     stages_result = await db.execute(select(distinct(Stages.stage_id)).where(Stages.stage == "All Stages"))
     all_stages_ids = stages_result.scalars().all()
     maps_result = await db.execute(select(Maps.map_id).where(Maps.map == "All Maps"))

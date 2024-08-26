@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.get("/picks-bans/trends/team/{team_id}")
-async def get_maps_win_loss_percentage(team_id: int, db: AsyncSession = Depends(get_db)):
+async def get_team_picks_bans_trends(team_id: int, db: AsyncSession = Depends(get_db)):
     team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
     team = team_result.scalars().first()
 
@@ -99,7 +99,7 @@ async def get_maps_win_loss_percentage(team_id: int, db: AsyncSession = Depends(
     return JSONResponse(content=response)
 
 @router.get("/picks-bans/team/{team_id}")
-async def get_maps_win_loss_percentage(team_id: int, db: AsyncSession = Depends(get_db)):
+async def get_team_picks_bans(team_id: int, db: AsyncSession = Depends(get_db)):
     team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
     team = team_result.scalars().first()
 
@@ -169,7 +169,7 @@ async def get_maps_win_loss_percentage(team_id: int, db: AsyncSession = Depends(
     return JSONResponse(content=response)
 
 @router.get("/picks-bans/trends")
-async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
+async def get_picks_bans_trends(db: AsyncSession = Depends(get_db)):
     maps_result = await db.execute(select(Maps))
     all_maps = maps_result.all()
     maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
@@ -248,7 +248,7 @@ async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
     return JSONResponse(content=response)
 
 @router.get("/picks-bans")
-async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
+async def get_picks_bans(db: AsyncSession = Depends(get_db)):
     maps_result = await db.execute(select(Maps))
     all_maps = maps_result.all()
     maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
