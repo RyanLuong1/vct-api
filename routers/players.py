@@ -3,9 +3,9 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.common_schemas import PlayerBase
 from models.common_models import Players
 from utility.db import get_db
+import utility.common_values
 from typing import Optional
 router = APIRouter()
 
@@ -37,8 +37,6 @@ async def get_player(identifier: str, db: AsyncSession = Depends(get_db)):
 
 @router.get("/players")
 async def get_all_players(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Players))
-    players = jsonable_encoder(result.scalars().all())
-    response = {item["player"]: item["player_id"] for item in players}
+    response = utility.common_values.get_all_players(db = db)
     return JSONResponse(content=response)
 

@@ -1,25 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy import select, distinct, func, case, or_, and_
+from sqlalchemy import select, func, case, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.common_models import Maps, Stages, Teams
 from models.stats_models import MapsStats, MapsScores
 from utility.db import get_db
+from utility.common_values import *
 
 router = APIRouter()
 
 @router.get("/maps-stats/trends/wr/team/{team_id}")
 async def get_team_maps_win_loss_percentage_trends(team_id: int, db: AsyncSession = Depends(get_db)):
-    team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
-    team = team_result.scalars().first()
+    team = get_team_by_id(team_id = team_id)
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")    
 
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
+    maps = get_all_maps(db = db)
     response = {}
 
     win_sum = func.sum(
@@ -80,15 +77,12 @@ async def get_team_maps_win_loss_percentage_trends(team_id: int, db: AsyncSessio
 
 @router.get("/maps-stats/wr/team/{team_id}")
 async def get_team_maps_win_loss_percentage(team_id: int, db: AsyncSession = Depends(get_db)):
-    team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
-    team = team_result.scalars().first()
+    team = get_team_by_id(team_id = team_id)
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")    
 
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
+    maps = get_all_maps(db = db)
     response = {}
 
     win_sum = func.sum(
@@ -136,13 +130,9 @@ async def get_team_maps_win_loss_percentage(team_id: int, db: AsyncSession = Dep
 
 @router.get("/maps-stats/trends/wr")
 async def get_maps_win_loss_percentage_trends(db: AsyncSession = Depends(get_db)):
-    stages_result = await db.execute(select(distinct(Stages.stage_id)).where(Stages.stage == "All Stages"))
-    all_stages_ids = stages_result.scalars().all()
-    maps_result = await db.execute(select(Maps.map_id).where(Maps.map == "All Maps"))
-    all_maps_id = maps_result.scalars().first()
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
+    all_stages_ids = get_all_stages_ids(db = db)
+    all_maps_id = get_all_maps_id(db = db)
+    maps = get_all_maps(db = db)
     response = {}
     result = await db.execute(select(
         MapsStats.map_id,
@@ -171,13 +161,9 @@ async def get_maps_win_loss_percentage_trends(db: AsyncSession = Depends(get_db)
 
 @router.get("/maps-stats/wr")
 async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
-    stages_result = await db.execute(select(distinct(Stages.stage_id)).where(Stages.stage == "All Stages"))
-    all_stages_ids = stages_result.scalars().all()
-    maps_result = await db.execute(select(Maps.map_id).where(Maps.map == "All Maps"))
-    all_maps_id = maps_result.scalars().first()
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
+    all_stages_ids = get_all_stages_ids(db = db)
+    all_maps_id = get_all_maps_id(db = db)
+    maps = get_all_maps(db = db)
     response = {}
     result = await db.execute(select(
         MapsStats.map_id,

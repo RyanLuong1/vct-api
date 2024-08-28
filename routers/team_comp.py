@@ -1,18 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
-from sqlalchemy import select, distinct, func
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.common_models import Agents, Stages, Maps, Teams
 from models.stats_models import TeamsPickAgents
 from utility.db import get_db
-
+from utility.common_values import *
 router = APIRouter()
 
 
 @router.get("/team-comp/trends/team/{team_id}")
 async def get_specific_team_team_comp_trends(team_id: int,db: AsyncSession = Depends(get_db), limit: int = Query(10)):
-    team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
-    team = team_result.scalars().first()
+    team = get_team_by_id(db = db, team_id = team_id)
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")  
@@ -20,14 +18,9 @@ async def get_specific_team_team_comp_trends(team_id: int,db: AsyncSession = Dep
     elif limit <= 0:
         raise HTTPException(status_code=404, detail=f"The limit needs to be higher than 0. You provided {limit}")    
 
-    agents_result = await db.execute(select(Agents))
-    agents = agents_result.all()
-    agents = {record[0].agent_id: record[0].agent for record in agents if record[0].agent}
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
-    stages_result = await db.execute(select(distinct(Stages.stage_id)).where(Stages.stage == "All Stages"))
-    all_stages_ids = stages_result.scalars().all()
+    agents = get_all_agents(db = db)
+    maps = get_all_maps(db = db)
+    all_stages_ids = get_all_stages_ids(db = db)
     response = {}
     result = await db.execute(
         select(
@@ -73,8 +66,7 @@ async def get_specific_team_team_comp_trends(team_id: int,db: AsyncSession = Dep
 
 @router.get("/team-comp/team/{team_id}")
 async def get_specific_team_team_comp(team_id: int, db: AsyncSession = Depends(get_db), limit: int = Query(10)):
-    team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
-    team = team_result.scalars().first()
+    team = get_team_by_id(db = db, team_id = team_id)
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")   
@@ -82,14 +74,9 @@ async def get_specific_team_team_comp(team_id: int, db: AsyncSession = Depends(g
     elif limit <= 0:
         raise HTTPException(status_code=404, detail=f"The limit needs to be higher than 0. You provided {limit}")    
 
-    agents_result = await db.execute(select(Agents))
-    agents = agents_result.all()
-    agents = {record[0].agent_id: record[0].agent for record in agents if record[0].agent}
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
-    stages_result = await db.execute(select(distinct(Stages.stage_id)).where(Stages.stage == "All Stages"))
-    all_stages_ids = stages_result.scalars().all()
+    agents = get_all_agents(db = db)
+    maps = get_all_maps(db = db)
+    all_stages_ids = get_all_stages_ids(db = db)
     response = {}
     result = await db.execute(
         select(
@@ -134,14 +121,9 @@ async def get_team_comp_per_year(db: AsyncSession = Depends(get_db), limit: int 
     if limit <= 0:
         raise HTTPException(status_code=404, detail=f"The limit needs to be higher than 0. You provided {limit}")    
 
-    agents_result = await db.execute(select(Agents))
-    agents = agents_result.all()
-    agents = {record[0].agent_id: record[0].agent for record in agents if record[0].agent}
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
-    stages_result = await db.execute(select(distinct(Stages.stage_id)).where(Stages.stage == "All Stages"))
-    all_stages_ids = stages_result.scalars().all()
+    agents = get_all_agents(db = db)
+    maps = get_all_maps(db = db)
+    all_stages_ids = get_all_stages_ids(db = db)
     response = {}
     result = await db.execute(
         select(
@@ -189,14 +171,9 @@ async def get_team_comp(db: AsyncSession = Depends(get_db), limit: int = Query(1
     if limit <= 0:
         raise HTTPException(status_code=404, detail=f"The limit needs to be higher than 0. You provided {limit}")    
 
-    agents_result = await db.execute(select(Agents))
-    agents = agents_result.all()
-    agents = {record[0].agent_id: record[0].agent for record in agents if record[0].agent}
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
-    stages_result = await db.execute(select(distinct(Stages.stage_id)).where(Stages.stage == "All Stages"))
-    all_stages_ids = stages_result.scalars().all()
+    agents = get_all_agents(db = db)
+    maps = get_all_maps(db = db)
+    all_stages_ids = get_all_stages_ids(db = db)
     response = {}
     result = await db.execute(
         select(

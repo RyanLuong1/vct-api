@@ -3,10 +3,10 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.common_schemas import TournamentBase
 from models.common_models import Tournaments
 from utility.db import get_db
 from utility.pools import tournament_pool
+import utility.common_values
 from typing import Optional
 
 router = APIRouter()
@@ -48,11 +48,5 @@ async def get_tournament_based_on_year(year: str, db: AsyncSession = Depends(get
 
 @router.get("/tournaments")
 async def get_all_tournaments(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Tournaments))
-    tournaments = jsonable_encoder(result.scalars().all())
-    response = {}
-    for item in tournaments:
-        year_dict = response.setdefault(item["year"], {})
-        tournament, id = item["tournament"], item["tournament_id"]
-        year_dict[tournament] = id
+    response = utility.common_values.get_all_tournaments(db = db)
     return JSONResponse(content=response)

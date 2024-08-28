@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.common_models import Maps
 from utility.db import get_db
 from utility.pools import map_pool
-
+import utility.common_values
 router = APIRouter()
 
 @router.get("/maps/pool")
@@ -29,7 +29,5 @@ async def get_map(identifier: str, db: AsyncSession = Depends(get_db)):
 
 @router.get("/maps")
 async def get_all_maps(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Maps))
-    maps = jsonable_encoder(result.scalars().all())
-    response = {item["map"]: item["map_id"] for item in maps if item["map"]}
+    response = utility.common_values.get_all_maps(db = db)
     return JSONResponse(content=response)

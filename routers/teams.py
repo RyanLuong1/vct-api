@@ -3,9 +3,9 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.common_schemas import TeamBase
 from models.common_models import Teams
 from utility.db import get_db
+import utility.common_values
 from typing import Optional
 
 router = APIRouter()
@@ -37,7 +37,5 @@ async def get_team(identifier: str, db: AsyncSession = Depends(get_db)):
 
 @router.get("/teams")
 async def get_all_teams(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Teams))
-    teams = jsonable_encoder(result.scalars().all())
-    response = {item["team"]: item["team_id"] for item in teams}
+    response = utility.common_values.get_all_teams(db = db)
     return JSONResponse(content=response)

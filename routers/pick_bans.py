@@ -1,26 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from sqlalchemy import select, distinct, func
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.common_models import Maps, Teams
 from models.stats_models import DraftPhase
 from utility.db import get_db
+from utility.common_values import *
 
 router = APIRouter()
 
 
 @router.get("/picks-bans/trends/team/{team_id}")
 async def get_team_picks_bans_trends(team_id: int, db: AsyncSession = Depends(get_db)):
-    team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
-    team = team_result.scalars().first()
+    team = get_team_by_id(db = db, team_id = team_id)
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")
-    years_result = await db.execute(select(distinct(DraftPhase.year)).where(DraftPhase.team_id == team_id))
-    years = years_result.scalars().all()  
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
+    years = get_years(db = db, team_id = team_id)
+    maps = get_all_maps(db = db)
     response = {}
 
     bans_result = await db.execute(select(
@@ -100,14 +96,11 @@ async def get_team_picks_bans_trends(team_id: int, db: AsyncSession = Depends(ge
 
 @router.get("/picks-bans/team/{team_id}")
 async def get_team_picks_bans(team_id: int, db: AsyncSession = Depends(get_db)):
-    team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
-    team = team_result.scalars().first()
+    team = get_team_by_id(db = db, team_id = team_id)
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")    
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
+    maps = get_all_maps(db = db)
     response = {}
 
     bans_result = await db.execute(select(
@@ -170,11 +163,9 @@ async def get_team_picks_bans(team_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.get("/picks-bans/trends")
 async def get_picks_bans_trends(db: AsyncSession = Depends(get_db)):
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
+    maps = get_all_maps(db = db)
     response = {}
-    years = [2021, 2022, 2023, 2024]
+    years = get_years()
 
     bans_result = await db.execute(select(
         DraftPhase.map_id,
@@ -249,9 +240,7 @@ async def get_picks_bans_trends(db: AsyncSession = Depends(get_db)):
 
 @router.get("/picks-bans")
 async def get_picks_bans(db: AsyncSession = Depends(get_db)):
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
+    maps = get_all_maps(db = db)
     response = {}
 
     bans_result = await db.execute(select(

@@ -6,33 +6,23 @@ from sqlalchemy.orm import aliased
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.stats_models import AgentsPickRates, TeamsPickAgents, Overview
 from models.junction_models import OverviewAgents
-from models.common_models import Agents, Maps, Stages, Teams, Players
 from utility.db import get_db
+from utility.common_values import *
 
 router = APIRouter()
 
 @router.get("/pick-rates/agents/trends/team/{team_id}")
 async def get_team_agents_pick_rates_trends(team_id: int, db: AsyncSession = Depends(get_db), include_maps:bool = Query(False), include_players: bool = Query(False)):
-    team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
-    team = team_result.scalars().first()
+    team = get_team_by_id(db = db, team_id = team_id)
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")
-    years_result = await db.execute(select(distinct(TeamsPickAgents.year)).where(TeamsPickAgents.team_id == team_id))
-    years = years_result.scalars().all()
-    stages_result = await db.execute(select(distinct(Stages.stage_id)).where(Stages.stage == "All Stages", Stages.year.in_(years)))
-    all_stages_ids = stages_result.scalars().all()
-    maps_result = await db.execute(select(Maps.map_id).where(Maps.map == "All Maps"))
-    all_maps_id = maps_result.scalars().first()
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
-    players_result = await db.execute(select(Players))
-    all_players = players_result.all()
-    players = {record[0].player_id: record[0].player for record in all_players if record[0].player}
-    agents_result = await db.execute(select(Agents))
-    agents = agents_result.all()
-    agents = {record[0].agent_id: record[0].agent for record in agents if record[0].agent}
+    years = get_years(db = db, team_id = team_id)
+    all_stages_ids = get_all_stages_ids(db = db, years = years)
+    all_maps_id = get_all_maps_id(db = db)
+    maps = get_all_maps(db = db)
+    players = get_all_players(db = db)
+    agents = get_all_agents(db = db)
     overview_agents = aliased(OverviewAgents)
     response = {}
 
@@ -59,7 +49,6 @@ async def get_team_agents_pick_rates_trends(team_id: int, db: AsyncSession = Dep
             map_dict = year_dict.setdefault(map, {})
             map_dict[player] = total_pick
 
-        maps_result = await db.execute(select(Maps))
         result = await db.execute(select(
                 Overview.map_id,
                 Overview.player_id,
@@ -212,27 +201,17 @@ async def get_team_agents_pick_rates_trends(team_id: int, db: AsyncSession = Dep
 
 @router.get("/pick-rates/agents/team/{team_id}")
 async def get_team_agents_pick_rates(team_id: int, db: AsyncSession = Depends(get_db), include_maps: bool = Query(False), include_players: bool = Query(False)):
-    team_result = await db.execute(select(Teams.team).where(Teams.team_id == team_id))
-    team = team_result.scalars().first()
+    team = get_team_by_id(db = db, team_id = team_id)
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")
 
-    years_result = await db.execute(select(distinct(TeamsPickAgents.year)).where(TeamsPickAgents.team_id == team_id))
-    years = years_result.scalars().all()
-    stages_result = await db.execute(select(distinct(Stages.stage_id)).where(Stages.stage == "All Stages", Stages.year.in_(years)))
-    all_stages_ids = stages_result.scalars().all()
-    maps_result = await db.execute(select(Maps.map_id).where(Maps.map == "All Maps"))
-    all_maps_id = maps_result.scalars().first()
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
-    players_result = await db.execute(select(Players))
-    all_players = players_result.all()
-    players = {record[0].player_id: record[0].player for record in all_players if record[0].player}
-    agents_result = await db.execute(select(Agents))
-    agents = agents_result.all()
-    agents = {record[0].agent_id: record[0].agent for record in agents if record[0].agent}
+    years = get_years(db = db, team_id = team_id)
+    all_stages_ids = get_all_stages_ids(db = db, years = years)
+    all_maps_id = get_all_maps_id(db = db)
+    maps = get_all_maps(db = db)
+    players = get_all_players(db = db)
+    agents = get_all_agents(db = db)
     overview_agents = aliased(OverviewAgents)
     response = {}
 
@@ -387,17 +366,13 @@ async def get_team_agents_pick_rates(team_id: int, db: AsyncSession = Depends(ge
 @router.get("/pick-rates/agents/trends")
 async def get_agents_pick_rates_trends(db: AsyncSession = Depends(get_db), include_maps:bool = Query(False)):
 
-    stages_result = await db.execute(select(Stages.stage_id).where(Stages.stage == "All Stages"))
-    all_stages_ids = stages_result.scalars().all()
-    agents_result = await db.execute(select(Agents))
-    agents = agents_result.all()
-    agents = {record[0].agent_id: record[0].agent for record in agents if record[0].agent}
+    all_stages_ids = get_all_stages_ids(db = db)
+    agents = get_all_agents(db = db)
+    maps = get_all_maps(db = db)
+    all_maps_id = get_all_maps_id(db = db)
     response = {}
 
     if include_maps:
-        maps_result = await db.execute(select(Maps))
-        all_maps = maps_result.all()
-        maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
         result = await db.execute(select(
             AgentsPickRates.agent_id,
             AgentsPickRates.map_id,
@@ -422,8 +397,6 @@ async def get_agents_pick_rates_trends(db: AsyncSession = Depends(get_db), inclu
             percentage = round(record.overall_pick_rate * 100, 2)
             map_dict[agent] = jsonable_encoder(percentage)
     else:
-        maps_result = await db.execute(select(Maps.map_id).where(Maps.map == "All Maps"))
-        all_maps_id = maps_result.scalars().first()
         result = await db.execute(select(
             AgentsPickRates.agent_id,
             AgentsPickRates.year,
@@ -448,16 +421,10 @@ async def get_agents_pick_rates_trends(db: AsyncSession = Depends(get_db), inclu
 
 @router.get("/pick-rates/agents")
 async def get_agents_pick_rates(db: AsyncSession = Depends(get_db), include_maps: bool = Query(False)):
-    stages_result = await db.execute(select(Stages.stage_id).where(Stages.stage == "All Stages"))
-    all_stages_ids = stages_result.scalars().all()
-    maps_result = await db.execute(select(Maps.map_id).where(Maps.map == "All Maps"))
-    all_maps_id = maps_result.scalars().first()
-    maps_result = await db.execute(select(Maps))
-    all_maps = maps_result.all()
-    maps = {record[0].map_id: record[0].map for record in all_maps if record[0].map}
-    agents_result = await db.execute(select(Agents))
-    agents = agents_result.all()
-    agents = {record[0].agent_id: record[0].agent for record in agents if record[0].agent}
+    all_stages_ids = get_all_stages_ids(db = db)
+    all_maps_id = get_all_maps_id(db = db)
+    maps = get_all_maps(db = db)
+    agents = get_all_agents(db = db)
     response = {}
 
     if include_maps:
