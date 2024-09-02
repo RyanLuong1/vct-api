@@ -18,9 +18,9 @@ async def get_specific_team_team_comp_trends(team_id: int,db: AsyncSession = Dep
     elif limit <= 0:
         raise HTTPException(status_code=404, detail=f"The limit needs to be higher than 0. You provided {limit}")    
 
-    agents = get_all_agents(db = db)
-    maps = get_all_maps(db = db)
-    all_stages_ids = get_all_stages_ids(db = db)
+    agents = await get_all_agents(db = db)
+    maps = await get_all_maps(db = db)
+    all_stages_ids = await get_all_stages_ids(db = db)
     response = {}
     result = await db.execute(
         select(
@@ -33,7 +33,8 @@ async def get_specific_team_team_comp_trends(team_id: int,db: AsyncSession = Dep
             func.array_agg(TeamsPickAgents.agent_id).label("team_comp")
         ).where(
             TeamsPickAgents.stage_id.not_in(all_stages_ids),
-            TeamsPickAgents.team_id == team_id
+            TeamsPickAgents.team_id == team_id,
+            TeamsPickAgents.map_id != 0
         ).group_by(
             TeamsPickAgents.tournament_id,
             TeamsPickAgents.stage_id,
@@ -74,9 +75,9 @@ async def get_specific_team_team_comp(team_id: int, db: AsyncSession = Depends(g
     elif limit <= 0:
         raise HTTPException(status_code=404, detail=f"The limit needs to be higher than 0. You provided {limit}")    
 
-    agents = get_all_agents(db = db)
-    maps = get_all_maps(db = db)
-    all_stages_ids = get_all_stages_ids(db = db)
+    agents = await get_all_agents(db = db)
+    maps = await get_all_maps(db = db)
+    all_stages_ids = await get_all_stages_ids(db = db)
     response = {}
     result = await db.execute(
         select(
@@ -88,7 +89,8 @@ async def get_specific_team_team_comp(team_id: int, db: AsyncSession = Depends(g
             func.array_agg(TeamsPickAgents.agent_id).label("team_comp")
         ).where(
             TeamsPickAgents.stage_id.not_in(all_stages_ids),
-            TeamsPickAgents.team_id == team_id
+            TeamsPickAgents.team_id == team_id,
+            TeamsPickAgents.map_id != 0
         ).group_by(
             TeamsPickAgents.tournament_id,
             TeamsPickAgents.stage_id,
@@ -121,9 +123,9 @@ async def get_team_comp_per_year(db: AsyncSession = Depends(get_db), limit: int 
     if limit <= 0:
         raise HTTPException(status_code=404, detail=f"The limit needs to be higher than 0. You provided {limit}")    
 
-    agents = get_all_agents(db = db)
-    maps = get_all_maps(db = db)
-    all_stages_ids = get_all_stages_ids(db = db)
+    agents = await get_all_agents(db = db)
+    maps = await get_all_maps(db = db)
+    all_stages_ids = await get_all_stages_ids(db = db)
     response = {}
     result = await db.execute(
         select(
@@ -135,7 +137,8 @@ async def get_team_comp_per_year(db: AsyncSession = Depends(get_db), limit: int 
             TeamsPickAgents.year,
             func.array_agg(TeamsPickAgents.agent_id).label("team_comp")
         ).where(
-            TeamsPickAgents.stage_id.not_in(all_stages_ids)
+            TeamsPickAgents.stage_id.not_in(all_stages_ids),
+            TeamsPickAgents.map_id != 0
         ).group_by(
             TeamsPickAgents.tournament_id,
             TeamsPickAgents.stage_id,
@@ -171,9 +174,9 @@ async def get_team_comp(db: AsyncSession = Depends(get_db), limit: int = Query(1
     if limit <= 0:
         raise HTTPException(status_code=404, detail=f"The limit needs to be higher than 0. You provided {limit}")    
 
-    agents = get_all_agents(db = db)
-    maps = get_all_maps(db = db)
-    all_stages_ids = get_all_stages_ids(db = db)
+    agents = await get_all_agents(db = db)
+    maps = await get_all_maps(db = db)
+    all_stages_ids = await get_all_stages_ids(db = db)
     response = {}
     result = await db.execute(
         select(
@@ -184,7 +187,8 @@ async def get_team_comp(db: AsyncSession = Depends(get_db), limit: int = Query(1
             TeamsPickAgents.team_id,
             func.array_agg(TeamsPickAgents.agent_id).label("team_comp")
         ).where(
-            TeamsPickAgents.stage_id.not_in(all_stages_ids)
+            TeamsPickAgents.stage_id.not_in(all_stages_ids),
+            TeamsPickAgents.map_id != 0
         ).group_by(
             TeamsPickAgents.tournament_id,
             TeamsPickAgents.stage_id,

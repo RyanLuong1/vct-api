@@ -15,8 +15,8 @@ async def get_team_picks_bans_trends(team_id: int, db: AsyncSession = Depends(ge
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")
-    years = get_years(db = db, team_id = team_id)
-    maps = get_all_maps(db = db)
+    years = await get_years(db = db, team_id = team_id)
+    maps = await get_all_maps(db = db)
     response = {}
 
     bans_result = await db.execute(select(
@@ -100,7 +100,7 @@ async def get_team_picks_bans(team_id: int, db: AsyncSession = Depends(get_db)):
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")    
-    maps = get_all_maps(db = db)
+    maps = await get_all_maps(db = db)
     response = {}
 
     bans_result = await db.execute(select(
@@ -163,9 +163,9 @@ async def get_team_picks_bans(team_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.get("/picks-bans/trends")
 async def get_picks_bans_trends(db: AsyncSession = Depends(get_db)):
-    maps = get_all_maps(db = db)
+    maps = await get_all_maps(db = db)
     response = {}
-    years = get_years()
+    years = await get_years()
 
     bans_result = await db.execute(select(
         DraftPhase.map_id,
@@ -240,7 +240,7 @@ async def get_picks_bans_trends(db: AsyncSession = Depends(get_db)):
 
 @router.get("/picks-bans")
 async def get_picks_bans(db: AsyncSession = Depends(get_db)):
-    maps = get_all_maps(db = db)
+    maps = await get_all_maps(db = db)
     response = {}
 
     bans_result = await db.execute(select(

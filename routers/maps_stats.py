@@ -11,12 +11,12 @@ router = APIRouter()
 
 @router.get("/maps-stats/trends/wr/team/{team_id}")
 async def get_team_maps_win_loss_percentage_trends(team_id: int, db: AsyncSession = Depends(get_db)):
-    team = get_team_by_id(team_id = team_id)
+    team = await get_team_by_id(team_id = team_id)
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")    
 
-    maps = get_all_maps(db = db)
+    maps = await get_all_maps(db = db)
     response = {}
 
     win_sum = func.sum(
@@ -77,12 +77,12 @@ async def get_team_maps_win_loss_percentage_trends(team_id: int, db: AsyncSessio
 
 @router.get("/maps-stats/wr/team/{team_id}")
 async def get_team_maps_win_loss_percentage(team_id: int, db: AsyncSession = Depends(get_db)):
-    team = get_team_by_id(team_id = team_id)
+    team = await get_team_by_id(team_id = team_id)
 
     if not team:
         raise HTTPException(status_code=404, detail=f"The team does not exist given the team id: {team_id}")    
 
-    maps = get_all_maps(db = db)
+    maps = await get_all_maps(db = db)
     response = {}
 
     win_sum = func.sum(
@@ -130,9 +130,9 @@ async def get_team_maps_win_loss_percentage(team_id: int, db: AsyncSession = Dep
 
 @router.get("/maps-stats/trends/wr")
 async def get_maps_win_loss_percentage_trends(db: AsyncSession = Depends(get_db)):
-    all_stages_ids = get_all_stages_ids(db = db)
-    all_maps_id = get_all_maps_id(db = db)
-    maps = get_all_maps(db = db)
+    all_stages_ids = await get_all_stages_ids(db = db)
+    all_maps_id = await get_all_maps_id(db = db)
+    maps = await get_all_maps(db = db)
     response = {}
     result = await db.execute(select(
         MapsStats.map_id,
@@ -161,9 +161,9 @@ async def get_maps_win_loss_percentage_trends(db: AsyncSession = Depends(get_db)
 
 @router.get("/maps-stats/wr")
 async def get_maps_win_loss_percentage(db: AsyncSession = Depends(get_db)):
-    all_stages_ids = get_all_stages_ids(db = db)
-    all_maps_id = get_all_maps_id(db = db)
-    maps = get_all_maps(db = db)
+    all_stages_ids = await get_all_stages_ids(db = db)
+    all_maps_id = await get_all_maps_id(db = db)
+    maps = await get_all_maps(db = db)
     response = {}
     result = await db.execute(select(
         MapsStats.map_id,
