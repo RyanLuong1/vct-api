@@ -23,13 +23,14 @@ async def get_agent(identifier: str, db: AsyncSession = Depends(get_db)):
     else:
         result = await db.execute(select(Agents).where(Agents.agent == identifier))
     
-    if not result:
+    agent = result.scalars().first()
+    if not agent:
         raise HTTPException(status_code=404, detail=f"The agent was not found based on the id/name: {identifier}")
-    agent = jsonable_encoder(result.scalars().first())
-    response = {agent["agent"]: agent["agent_id"]}
+    response = {agent.agent: agent.agent_id}
     return JSONResponse(content=response)
 
 @router.get("/agents")
 async def get_all_agents(db: AsyncSession = Depends(get_db)):
-    response = utility.common_values.get_all_agents(db = db)
+    agents = await utility.common_values.get_all_agents(db = db)
+    response = {agent: agent_id for agent_id, agent in agents.items()}
     return JSONResponse(content=response)

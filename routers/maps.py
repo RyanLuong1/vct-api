@@ -21,13 +21,14 @@ async def get_map(identifier: str, db: AsyncSession = Depends(get_db)):
     else:
         result = await db.execute(select(Maps).where(Maps.map == identifier))
     
-    if not result:
+    map = result.scalars().first()
+    if not map:
         raise HTTPException(status_code=404, detail=f"The map was not found based on the id/name: {identifier}")
-    map = jsonable_encoder(result.scalars().first())
-    response = {map["map"]: map["map_id"]}
+    response = {map.map: map.map_id}
     return JSONResponse(content=response)
 
 @router.get("/maps")
 async def get_all_maps(db: AsyncSession = Depends(get_db)):
-    response = utility.common_values.get_all_maps(db = db)
+    maps = await utility.common_values.get_all_maps(db = db)
+    response = {map: map_id for map_id, map in maps.items()}
     return JSONResponse(content=response)

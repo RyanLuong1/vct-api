@@ -13,12 +13,14 @@ router = APIRouter()
 async def search_players(name: Optional[str] = Query(None, min_length=1), db: AsyncSession = Depends(get_db)):
     if name:
         result = await db.execute(select(Players).where(Players.player.like(f"{name}%")))
-        if not result:
-            raise HTTPException(status_code=404, detail=f"The search was not able to find a list of players similar to the name: {name}")
+        # if not result:
+        #     raise HTTPException(status_code=404, detail=f"The search was not able to find a list of players similar to the name: {name}")
     else:
         players = await db.execute(select(Players))
-    players = jsonable_encoder(result.scalars().all())
-    response = {item["player"]: item["player_id"] for item in players}
+    players = result.scalars().all()
+    if not players:
+        raise HTTPException(status_code=404, detail=f"The search was not able to find a list of players similar to the name: {name}")
+    response = {record.player: record.player_id for record in players}
     return JSONResponse(content=response)
 
 
@@ -29,14 +31,17 @@ async def get_player(identifier: str, db: AsyncSession = Depends(get_db)):
     else:
         result = await db.execute(select(Players).where(Players.player == identifier))
     
-    if not result:
+    # if not result:
+    #     raise HTTPException(status_code=404, detail=f"The player was not found based on the id/name: {identifier}")
+    player = result.scalars().first()
+    if not player:
         raise HTTPException(status_code=404, detail=f"The player was not found based on the id/name: {identifier}")
-    players = jsonable_encoder(result.scalars().all())
-    response = {item["player"]: item["player_id"] for item in players}
+    response = {player.player: player.player_id}
     return JSONResponse(content=response)
 
 @router.get("/players")
 async def get_all_players(db: AsyncSession = Depends(get_db)):
-    response = utility.common_values.get_all_players(db = db)
+    players = await utility.common_values.get_all_players(db = db)
+    response = {player: player_id for player_id, player in players.items()}
     return JSONResponse(content=response)
 

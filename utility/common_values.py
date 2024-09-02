@@ -62,5 +62,5 @@ async def get_all_tournaments(db: AsyncSession):
     for item in tournaments:
         year_dict = response.setdefault(item["year"], {})
         tournament, id = item["tournament"], item["tournament_id"]
-        year_dict[tournament] = id
-    return tournaments
+        year_dict[id] = tournament
+    return response
